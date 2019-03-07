@@ -6,18 +6,22 @@ It not rely any third party code.
 # Features
 match spell first letter; match spell string
 # Installation
-add this 2 files into your project:
+just add this 2 files into your project:
 
+    NSString+SpellMatch.h
+    NSString+SpellMatch.m
 
-#Usage:
-Create an NSString object(ie. str) your will be searching for.
-[str spellMatch:matchString];
+# Usage:
+Create an NSString object(ie. **str**) your will be searching for.
+
+    [str spellMatch:matchString];
+
 where:
 "matchString" is a nullable matching string.
 
-#More details:
-See this website for function design details.
+# More details:
+See this website url for function design details.
 https://www.jianshu.com/p/33f29eb598d9
 
-#Licence
-shareUtility is available under the MIT license. See the LICENSE file for detail.
+# Licence
+SpellMatch category is available under the MIT license. See the LICENSE file for detail.
