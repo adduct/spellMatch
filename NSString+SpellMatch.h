@@ -3,7 +3,7 @@
 //  
 //
 //  Created by white on 2019/3/7.
-//  Copyright © 2019 white All rights reserved.
+//  Copyright © 2019 white. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
