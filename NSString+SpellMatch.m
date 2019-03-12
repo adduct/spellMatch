@@ -101,6 +101,10 @@
                                     break;
                                 }//if
                             }//if
+                            
+                            if (mutableString.length >= matchString.length) {
+                                break;
+                            }
                         }
                         
                         if (!hasFound) {
