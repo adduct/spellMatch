@@ -50,20 +50,22 @@
     NSUInteger stringLen = self.length;
 
     BOOL isStringsEmpty = matchString == nil || matchStringLen < 1 || \
-    spellString == nil || spellString.length < 1 || \
-    spellLetter == nil || spellLetter.length < 1 ;
+                          spellString == nil || spellString.length < 1 || \
+                          spellLetter == nil || spellLetter.length < 1 ;
     if (isStringsEmpty) {
         NSLog(@"parameters are not valid.\nEnsure matchString(%@),spellString(%@) and spellLetter(%@) are all nonempty.",matchString,spellString,spellLetter);
         return nil;
     }
 
-    BOOL isStringValid = matchStringLen <= spellString.length && spellLetter.length <= spellString.length;
+    BOOL isStringValid = matchStringLen <= spellString.length && \
+                         spellLetter.length <= spellString.length;
     if (!isStringValid) {
         NSLog(@"parameters are not valid.\nEnsure matchString(%@)'s length <= spellString(%@)'s length and\n spellLetter(%@)'s length <= spellString(%@)'s length.",matchString,spellString,spellLetter,spellString);
         return nil;
     }
 
-    BOOL isParamValid = spellStringArray.count == spellLetter.length && spellLetter.length == stringLen;
+    BOOL isParamValid = spellStringArray.count == spellLetter.length && \
+                        spellLetter.length == stringLen;
     if (!isParamValid) {
         NSLog(@"parameters are not valid.\nEnsure spellStringArray(%@)'s length == spellLetter(%@)'s length and\n spellLetter'slength == string(%@)'s length.",spellStringArray,spellLetter,self);
         return nil;
