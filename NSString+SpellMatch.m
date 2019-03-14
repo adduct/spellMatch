@@ -42,98 +42,108 @@
                                     spellString:(NSString *)spellString
                                     spellLetter:(NSString *)spellLetter
                                spellStringArray:(NSArray <NSString *>*)spellStringArray {
-    #ifdef DEBUG
+#ifdef DEBUG
     NSLog(@" string: %@\n match string:%@\n spell string:%@\n spell letter:%@\n spell string array:%@",self,matchString,spellString,spellLetter,spellStringArray);
-    #endif
-    BOOL isStringsEmpty = matchString == nil || matchString.length < 1 || \
+#endif
+
+    NSUInteger matchStringLen = matchString.length;
+    NSUInteger stringLen = self.length;
+
+    BOOL isStringsEmpty = matchString == nil || matchStringLen < 1 || \
     spellString == nil || spellString.length < 1 || \
     spellLetter == nil || spellLetter.length < 1 ;
     if (isStringsEmpty) {
+        NSLog(@"parameters are not valid.\nEnsure matchString(%@),spellString(%@) and spellLetter(%@) are all nonempty.",matchString,spellString,spellLetter);
         return nil;
     }
-    
-    BOOL isStringValid = matchString.length <= spellString.length && spellLetter.length <= spellString.length;
+
+    BOOL isStringValid = matchStringLen <= spellString.length && spellLetter.length <= spellString.length;
     if (!isStringValid) {
+        NSLog(@"parameters are not valid.\nEnsure matchString(%@)'s length <= spellString(%@)'s length and\n spellLetter(%@)'s length <= spellString(%@)'s length.",matchString,spellString,spellLetter,spellString);
         return nil;
     }
-    
-    if (1 == matchString.length) {
-        if ([spellLetter rangeOfString:matchString].length > 0) {
-            NSUInteger idx = [spellLetter rangeOfString:matchString].location;
+
+    BOOL isParamValid = spellStringArray.count == spellLetter.length && spellLetter.length == stringLen;
+    if (!isParamValid) {
+        NSLog(@"parameters are not valid.\nEnsure spellStringArray(%@)'s length == spellLetter(%@)'s length and\n spellLetter'slength == string(%@)'s length.",spellStringArray,spellLetter,self);
+        return nil;
+    }
+
+    NSString *matchResultString = nil;
+    if (1 == matchStringLen) {
+        //match spell letter
+        NSRange matchRange = [spellLetter rangeOfString:matchString];
+        if (matchRange.length > 0) {
+            NSUInteger idx = matchRange.location;
             if (idx < self.length) {
-                return [self substringWithRange:[spellLetter rangeOfString:matchString]];
+                matchResultString = [self substringWithRange:matchRange];
             }
         }
     } else {
+        //first step: match spell letter
         if ([spellLetter rangeOfString:matchString].length > 0) {
             NSRange matchRange = [spellLetter rangeOfString:matchString];
-            
+
             NSUInteger idx = matchRange.location;
             NSUInteger len = matchRange.length;
-            if (idx < self.length &&
-                len <= self.length &&
-                idx+len <= self.length) {
-                return [self substringWithRange:matchRange];
+            if (idx < stringLen &&
+                len <= stringLen &&
+                idx + len <= stringLen) {
+                matchResultString = [self substringWithRange:matchRange];
             }
         } else {
+            //match spell for 1 or more than 1 character
             if ([spellString rangeOfString:matchString].length > 0) {
-                if (spellLetter.length == spellStringArray.count) {
-                    NSString *firStr = [matchString substringToIndex:1];
-                    NSRange firstRange = [spellLetter rangeOfString:firStr];
-                    
-                    BOOL hasFound = NO;
-                    NSUInteger len = 0;
-                    
-                    NSUInteger locInSpellLetter = firstRange.location;
-                    while (!hasFound && firstRange.length > 0) {
-                        NSMutableString *mutableString = [NSMutableString string];
-                        
-                        for (NSUInteger idx = locInSpellLetter;idx < spellStringArray.count;idx++) {
-                            NSString *str = spellStringArray[idx];
-                            
-                            [mutableString appendString:str];
+                NSString *firStr = [matchString substringToIndex:1];
+                NSRange firstRange = [spellLetter rangeOfString:firStr];
+
+                BOOL hasFound = NO;
+                NSUInteger len = 0;
+                NSUInteger locInSpellLetter = firstRange.location;
+                while (firstRange.length > 0) {
+                    NSMutableString *mutableString = [NSMutableString string];
+
+                    for (NSUInteger idx = locInSpellLetter;idx < spellStringArray.count;idx++) {
+                        NSString *str = spellStringArray[idx];
+                        [mutableString appendString:str];
+                        //check wether matchString is prefix of mutableString
+                        //only when mutableString.length >= matchStringLen
+                        if (mutableString.length >= matchStringLen) {
                             if ([mutableString hasPrefix:matchString]) {
-                                if (locInSpellLetter < self.length &&
-                                    idx - locInSpellLetter < self.length &&
-                                    idx + 1 <= self.length) {
-                                    len = idx - locInSpellLetter + 1;
-                                    hasFound = YES;
-                                    break;
-                                }//if
-                            }//if
-                            
-                            if (mutableString.length >= matchString.length) {
-                                break;
+                                len = idx - locInSpellLetter + 1;
+                                hasFound = YES;
                             }
-                        }
-                        
-                        if (!hasFound) {
-                            NSString *subSpellLetter = [spellLetter substringFromIndex:locInSpellLetter+1];
-                            NSRange newRange = [subSpellLetter rangeOfString:firStr];
-                            firstRange = newRange;
-                            if (newRange.length > 0) {
-                                locInSpellLetter += newRange.location + newRange.length;
-                            }
-                        }
-                    }//while
-                    
+
+                            break;
+                        }//if
+                    }//for
+
                     if (hasFound) {
-                        if (locInSpellLetter < self.length &&
-                            len <= self.length &&
-                            locInSpellLetter + len <= self.length) {
-                            NSRange newRange = NSMakeRange(locInSpellLetter, len);
-                            return [self substringWithRange:newRange];
+                        break;
+                    } else {
+                        //find location of firstStr in the remaing spell letter string.
+                        NSString *subSpellLetter = [spellLetter substringFromIndex:locInSpellLetter+1];
+                        NSRange spellRange = [subSpellLetter rangeOfString:firStr];
+                        firstRange = spellRange;
+                        if (spellRange.length > 0) {
+                            //location of firstStr in spell letter should be updated
+                            locInSpellLetter += spellRange.location + spellRange.length;
                         }
-                    }
-                //if (spellLetter.length == spellStringArray.count)
-                } else {
-                    NSAssert(NO, @"error. spell letter's:%@ length should be equal to array.count",spellLetter);
-                    return nil;
-                }                
-            }
-        }
+                    }//else
+                }//while
+
+                if (hasFound) {
+                    NSRange spellRange = NSMakeRange(locInSpellLetter, len);
+                    matchResultString = [self substringWithRange:spellRange];
+                }
+            }//if ([spellString rangeOfString:matchString].length > 0)
+        }//else
     }
-    return nil;
+
+#ifdef DEBUG
+    NSLog(@"matched result string:%@",matchResultString);
+#endif
+    return matchResultString;
 }
 
 - (NSArray <NSString*>*)__spellStringArrayWithSpellLetter:(NSString **)spellLetter spellString:(NSString **)spellString {
