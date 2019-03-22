@@ -7,17 +7,25 @@ For example:
 To search "风雨" in "阳光总在风雨后"。
 You can just input:
 1. pinyin's first letter: 
-fy or Fy, fY, FY.
+
+    fy or Fy, fY, FY.
+
 The uppercase state doesn't matter.
 Where f is the first letter of "风"'s pinyin string(feng), 
 y is the first letter of "雨"'s pinyin string(yu), ;
 
 Or input :
 2. complete pinying string：
-fengyu
+
+    fengyu
+
+
 
 3. incomplete pinying string: 
-fengy
+
+    fengy
+
+
 
 # Features
 Match spell's first letter; or match spell string
