@@ -35,6 +35,15 @@ NS_ASSUME_NONNULL_BEGIN
  @return matching string result. return nil if none
  */
 - (nullable NSString *)spellMatch:(NSString *)matchString;
+
+/**
+  full matching string result
+ 
+ @param matchString string that will be use to match
+ @return matching string result. return nil if none
+ To search "中国" in "中国人民"， you need input full pinying: zhongguo, or pinyin first letter: zg.
+ */
+- (nullable NSString *)fullSpellMatch:(NSString *)matchString;
 @end
 
 NS_ASSUME_NONNULL_END
