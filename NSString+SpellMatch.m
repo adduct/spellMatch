@@ -28,11 +28,25 @@
 @implementation NSString (SpellMatch)
 
 - (nullable NSString *)spellMatch:(NSString *)matchString {
+    return [self _spellMatcth:matchString useFullPinyin:NO];
+}
+
+- (nullable NSString *)fullSpellMatch:(NSString *)matchString {
+    return [self _spellMatcth:matchString useFullPinyin:YES];
+}
+
+- (nullable NSString *)_spellMatcth:(nullable NSString *)matchString
+                      useFullPinyin:(BOOL)fullFlag {
+    if (self == nil || self.length == 0 || \
+        matchString == nil || matchString.length == 0) {
+        return nil;
+    }
+    
     NSString *spellLetterString = [NSString string];
     NSString *spellString = [NSString string];
     NSArray <NSString *>*spellStringArray = [self __spellStringArrayWithSpellLetter:&spellLetterString spellString:&spellString];
     if ([spellLetterString containsString:matchString] || [spellString containsString:matchString]) {
-        return [self __subStringMatchedString:matchString spellString:spellString spellLetter:spellLetterString spellStringArray:spellStringArray];
+        return [self __subStringMatchedString:matchString spellString:spellString spellLetter:spellLetterString spellStringArray:spellStringArray fullMatch:fullFlag];
     } else {
         return nil;
     }
@@ -41,7 +55,8 @@
 - (nullable NSString *)__subStringMatchedString:(NSString *)matchString
                                     spellString:(NSString *)spellString
                                     spellLetter:(NSString *)spellLetter
-                               spellStringArray:(NSArray <NSString *>*)spellStringArray {
+                               spellStringArray:(NSArray <NSString *>*)spellStringArray
+                                      fullMatch:(BOOL)fullFlag {
 #ifdef DEBUG
     NSLog(@" string: %@\n match string:%@\n spell string:%@\n spell letter:%@\n spell string array:%@",self,matchString,spellString,spellLetter,spellStringArray);
 #endif
@@ -111,7 +126,7 @@
                         //check wether matchString is prefix of mutableString
                         //only when mutableString.length >= matchStringLen
                         if (mutableString.length >= matchStringLen) {
-                            if ([mutableString hasPrefix:matchString]) {
+                            if ([self _fullMatchString:mutableString withString:matchString  fullFlag:fullFlag]) {
                                 len = idx - locInSpellLetter + 1;
                                 hasFound = YES;
                             }
@@ -146,6 +161,15 @@
     NSLog(@"matched result string:%@",matchResultString);
 #endif
     return matchResultString;
+}
+
+
+- (BOOL)_fullMatchString:(nonnull NSString *)str withString:(nonnull NSString *)matchString fullFlag:(BOOL)fullFlag {
+    if (fullFlag) {
+        return [str isEqualToString:matchString];
+    } else {
+        return [str hasPrefix:matchString];
+    }
 }
 
 - (NSArray <NSString*>*)__spellStringArrayWithSpellLetter:(NSString **)spellLetter spellString:(NSString **)spellString {
