@@ -33,7 +33,9 @@ Use function:
 
     [str spellMatch:matchString];
 or
+
     [str fullSpellMatch:matchString];
+
 where:
 parameter: "matchString" is a nullable string to be matched.
 
