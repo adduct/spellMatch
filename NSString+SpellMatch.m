@@ -87,6 +87,7 @@
     }
 
     NSString *matchResultString = nil;
+    matchString = [matchString uppercaseString];
     if (1 == matchStringLen) {
         //match spell letter
         NSRange matchRange = [spellLetter rangeOfString:matchString];
