@@ -44,9 +44,16 @@
     
     NSString *spellLetterString = [NSString string];
     NSString *spellString = [NSString string];
-    NSArray <NSString *>*spellStringArray = [self __spellStringArrayWithSpellLetter:&spellLetterString spellString:&spellString];
-    if ([spellLetterString containsString:matchString] || [spellString containsString:matchString]) {
-        return [self __subStringMatchedString:matchString spellString:spellString spellLetter:spellLetterString spellStringArray:spellStringArray fullMatch:fullFlag];
+    NSArray <NSString *>*spellStringArray = [self __spellStringArrayWithSpellLetter:&spellLetterString
+                                                                        spellString:&spellString];
+    
+    if ([spellLetterString containsString:matchString] ||
+        [spellString containsString:matchString]) {
+        return [self __subStringMatchedString:matchString
+                                  spellString:spellString
+                                  spellLetter:spellLetterString
+                             spellStringArray:spellStringArray
+                                    fullMatch:fullFlag];
     } else {
         return nil;
     }
@@ -58,7 +65,8 @@
                                spellStringArray:(NSArray <NSString *>*)spellStringArray
                                       fullMatch:(BOOL)fullFlag {
 #ifdef DEBUG
-    NSLog(@" string: %@\n match string:%@\n spell string:%@\n spell letter:%@\n spell string array:%@",self,matchString,spellString,spellLetter,spellStringArray);
+    NSLog(@" string: %@\n match string:%@\n spell string:%@\n spell letter:%@\n\
+          spell string array:%@",self,matchString,spellString,spellLetter,spellStringArray);
 #endif
 
     NSUInteger matchStringLen = matchString.length;
@@ -68,21 +76,26 @@
                           spellString == nil || spellString.length < 1 || \
                           spellLetter == nil || spellLetter.length < 1 ;
     if (isStringsEmpty) {
-        NSLog(@"parameters are not valid.\nEnsure matchString(%@),spellString(%@) and spellLetter(%@) are all nonempty.",matchString,spellString,spellLetter);
+        NSLog(@"parameters are not valid.\nEnsure matchString(%@),spellString(%@)\
+              and spellLetter(%@) are all nonempty.",matchString,spellString,spellLetter);
         return nil;
     }
 
     BOOL isStringValid = matchStringLen <= spellString.length && \
                          spellLetter.length <= spellString.length;
     if (!isStringValid) {
-        NSLog(@"parameters are not valid.\nEnsure matchString(%@)'s length <= spellString(%@)'s length and\n spellLetter(%@)'s length <= spellString(%@)'s length.",matchString,spellString,spellLetter,spellString);
+        NSLog(@"parameters are not valid.\nEnsure matchString(%@)'s \
+              length <= spellString(%@)'s length and\n spellLetter(%@)'s \
+              length <= spellString(%@)'s length.",matchString,spellString,spellLetter,spellString);
         return nil;
     }
 
     BOOL isParamValid = spellStringArray.count == spellLetter.length && \
                         spellLetter.length == stringLen;
     if (!isParamValid) {
-        NSLog(@"parameters are not valid.\nEnsure spellStringArray(%@)'s length == spellLetter(%@)'s length and\n spellLetter'slength == string(%@)'s length.",spellStringArray,spellLetter,self);
+        NSLog(@"parameters are not valid.\nEnsure spellStringArray(%@)'s \
+              length == spellLetter(%@)'s length and\n \
+              spellLetter'slength == string(%@)'s length.",spellStringArray,spellLetter,self);
         return nil;
     }
 
@@ -165,7 +178,9 @@
 }
 
 
-- (BOOL)_fullMatchString:(nonnull NSString *)str withString:(nonnull NSString *)matchString fullFlag:(BOOL)fullFlag {
+- (BOOL)_fullMatchString:(nonnull NSString *)str
+              withString:(nonnull NSString *)matchString
+                fullFlag:(BOOL)fullFlag {
     if (fullFlag) {
         return [str isEqualToString:matchString];
     } else {
@@ -173,27 +188,47 @@
     }
 }
 
-- (NSArray <NSString*>*)__spellStringArrayWithSpellLetter:(NSString **)spellLetter spellString:(NSString **)spellString {
+- (NSArray <NSString*>*)__spellStringArrayWithSpellLetter:(NSString **)spellLetter
+                                              spellString:(NSString **)spellString {
     NSMutableString *mutableSpell = [NSMutableString string];
     NSMutableString *mutableSpellLetter = [NSMutableString string];
     NSMutableArray <NSString *>*mutableSpellArray = [NSMutableArray array];
-    [self enumerateSubstringsInRange:NSMakeRange(0, self.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop) {
-        NSMutableString *mutableString = [NSMutableString stringWithString:substring];
-        CFStringTransform((CFMutableStringRef)mutableString, NULL, kCFStringTransformToLatin, false);
-        NSString *spellString = [mutableString stringByFoldingWithOptions:NSDiacriticInsensitiveSearch locale:[NSLocale currentLocale]];
-        NSString *uppercaseSpell = [spellString uppercaseString];
-        [mutableSpell appendString:uppercaseSpell];
-        
-        NSString *letter = [uppercaseSpell substringToIndex:1];
-        [mutableSpellLetter appendString:letter];
-        
-        [mutableSpellArray addObject:uppercaseSpell];
-    }];
+    [self enumerateSubstringsInRange:NSMakeRange(0, self.length)
+                             options:NSStringEnumerationByComposedCharacterSequences
+                          usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop) {
+                              NSMutableString *mutableString = [NSMutableString stringWithString:substring];
+                              CFStringTransform((CFMutableStringRef)mutableString, NULL, kCFStringTransformToLatin, false);
+                              NSString *spellString = [mutableString stringByFoldingWithOptions:NSDiacriticInsensitiveSearch
+                                                                   locale:[self _chineseLocale]];
+                              
+                              NSString *uppercaseSpell = [spellString uppercaseString];
+                              if (uppercaseSpell && uppercaseSpell.length > 0) {
+                                  [mutableSpell appendString:uppercaseSpell];
+                                  NSString *letter = [uppercaseSpell substringToIndex:1];
+                                  [mutableSpellLetter appendString:letter];
+                                  [mutableSpellArray addObject:uppercaseSpell];
+                              } else {
+#ifdef DEBUG
+                                  NSLog(@"uppercaseSpell is nil converted from substring:%@",substring);
+#endif
+                              }
+                          }];
     *spellString = [NSString stringWithString:mutableSpell];
     *spellLetter = [NSString stringWithString:mutableSpellLetter];
     
     NSArray <NSString *>*spellStringArray = [NSArray arrayWithArray:mutableSpellArray];
     return spellStringArray;
+}
+
+//chinese locale
+- (NSLocale *)_chineseLocale {
+    NSLocale *chLocale = [[NSLocale alloc]initWithLocaleIdentifier:@"zh-Hans"];
+    
+    if (@available(iOS 9, *)) {
+        chLocale = [[NSLocale alloc]initWithLocaleIdentifier:@"zh-Hans-CN"];
+    }
+    
+    return chLocale;
 }
 
 @end
