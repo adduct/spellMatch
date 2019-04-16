@@ -222,10 +222,10 @@
 
 //chinese locale
 - (NSLocale *)_chineseLocale {
-    NSLocale *chLocale = [[NSLocale alloc]initWithLocaleIdentifier:@"zh-Hans"];
+    NSLocale *chLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"zh-Hans"];
     
     if (@available(iOS 9, *)) {
-        chLocale = [[NSLocale alloc]initWithLocaleIdentifier:@"zh-Hans-CN"];
+        chLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"zh-Hans-CN"];
     }
     
     return chLocale;
