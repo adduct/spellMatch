@@ -198,8 +198,8 @@
                           usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop) {
                               NSMutableString *mutableString = [NSMutableString stringWithString:substring];
                               CFStringTransform((CFMutableStringRef)mutableString, NULL, kCFStringTransformToLatin, false);
-                              NSString *spellString = [mutableString stringByFoldingWithOptions:NSDiacriticInsensitiveSearch
-                                                                   locale:[self _chineseLocale]];
+                              NSLocale *currentLocale = [self _chineseLocale];
+                              NSString *spellString = [mutableString stringByFoldingWithOptions:NSDiacriticInsensitiveSearch locale:currentLocale];
                               
                               NSString *uppercaseSpell = [spellString uppercaseString];
                               if (uppercaseSpell && uppercaseSpell.length > 0) {
