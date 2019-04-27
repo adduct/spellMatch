@@ -1,18 +1,18 @@
 # NSString+SpellMatch
-This NSString category is a useful function for match spell or spell first letter of string.
-It can match the spell's first letter or uncompleted spell string. Then returns the matched string.
-It not rely any third party code.
+This NSString category provides 2 useful functions. One function provide matching spell in string, another one provides searching spell's first letter in string.
+It can match uncompleted spell string. 
+It not rely on any third party's code.
 
 For example:
-To search "风雨" in "阳光总在风雨后"。
+To search "风雨" in "阳光总在风雨后",
 You can just input:
 1. pinyin's first letter: 
 
     fy or Fy, fY, FY.
 
 The uppercase state doesn't matter.
-Where f is the first letter of "风"'s pinyin string(feng), 
-y is the first letter of "雨"'s pinyin string(yu), ;
+Where f is the first letter of "风"'s pinyin string: feng, 
+y is the first letter of "雨"'s pinyin string: yu;
 
 Or input :
 2. complete pinying string：
