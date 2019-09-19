@@ -46,6 +46,7 @@
     NSString *spellString = [NSString string];
     NSArray <NSString *>*spellStringArray = [self __spellStringArrayWithSpellLetter:&spellLetterString
                                                                         spellString:&spellString];
+    matchString = [matchString uppercaseString];
     
     if ([spellLetterString containsString:matchString] ||
         [spellString containsString:matchString]) {
@@ -100,7 +101,6 @@
     }
 
     NSString *matchResultString = nil;
-    matchString = [matchString uppercaseString];
     if (1 == matchStringLen) {
         //match spell letter
         NSRange matchRange = [spellLetter rangeOfString:matchString];
