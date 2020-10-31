@@ -33,14 +33,26 @@
  @param matchString string that will be use to match
  @return matching string result. return nil if none
  */
-- (nullable NSString *)spellMatch:(NSString *)matchString;
+- (nullable NSString *)spellMatch:(NSString *_Nullable)matchString;
 
 /**
   full matching string result
  
- @param matchString string that will be use to match
+ @param matchString string that will be used to match
  @return matching string result. return nil if none
  To search "中国" in "中国人民"， you need input full pinying: zhongguo, or pinyin first letter: zg.
  */
-- (nullable NSString *)fullSpellMatch:(NSString *)matchString;
+- (nullable NSString *)fullSpellMatch:(NSString *_Nullable)matchString;
+
+/// matching string result array
+/// @param matchString string that will be used to match
+/// @return matching string result array. return nil if none
+- (nullable NSArray <__kindof NSString *> *)spellsMatch:(nullable NSString *)matchString;
+
+
+/// matching string result array.
+/// @param matchString  string that will be used to match
+/// @return An array.  Array element is a NSDictionay object. Each object is a NSString object, value is a NSValue object(every object is NSValue actually)
+- (nullable NSArray <__kindof NSDictionary *> *)spellsWithRangeValuesMatch:(nullable NSString *)matchString;
+
 @end
