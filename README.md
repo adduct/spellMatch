@@ -28,7 +28,8 @@ Or input :
 
 
 # Features
-Match spell's first letter; or match spell string
+Match spell's first letter; or match spell string.
+Return first match string or all matched strings.
 # Installation
 Just add the following 2 files into your project:
 
@@ -43,6 +44,17 @@ Use function:
 or
 
     [str fullSpellMatch:matchString];
+to return the first matched result string;
+
+or
+
+    [str spellsMatch:matchString];
+to return all matched result strings.
+
+or
+
+    [str spellsWithRangeValuesMatch:matchString];
+to return all matched result strings and its ranges in original string.
 
 where:
 parameter: "matchString" is a nullable string to be matched.
